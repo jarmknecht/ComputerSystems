@@ -1,0 +1,7 @@
+There are rumors on the internets.
+1 2 4 8 16 32
+2 -814
+4 19 DrEvil
+abcdef
+6 2 3 5 1 4
+1001
