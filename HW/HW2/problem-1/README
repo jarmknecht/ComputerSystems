@@ -1,0 +1,6 @@
+To build my program all one has to type is make. Typing just make will automatically choose as the default to make my struct program that relies on my main.c struct.c and struct.h. There are three ways my programcan be ran. 1) by typing ./struct file|height people.txt this way reads from a file. 2) by typing ./struct file|height this then will read the input from the keyboard and create the array that way and 3) by typing cat | ./struct last|height and then it will read from the keyboard like the previous example.
+
+Ways I tested my program
+I tested to make sure that if only one argument was given that if it were anything other than last or height it will terminate the program.
+Another thing I tested was if there were no arguments (except of course the program name) and if there were more arguments after the text file. This correctly printed out the error saying invalid amount of arguments.
+I tested to see that the program could correctly sort an array with 2, 3, 4, 5, and 6 structs within it. Thus, I am sure through inductive reasoning that it can sort an infinite amount of structs, this all depends on the available memory of course. 

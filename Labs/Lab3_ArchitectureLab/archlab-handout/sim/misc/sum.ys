@@ -1,0 +1,57 @@
+# sum.ys iteratively sums a linked list
+
+# Execution of program starts at address 0
+   .pos 0
+   irmovq stack, %rsp      # Set up stack pointer
+   call main               # Execute function main
+   halt                    # Quit program with program status 2-halt
+
+# Sample linked list
+   .align 8
+   ele1:
+      .quad 0x00a   # Data of first node long num 10
+      .quad ele2    # Next node in list
+   ele2:
+      .quad 0x0b0   # Data of second node long num 176
+      .quad ele3    # Next node in list
+   ele3:
+      .quad 0xc00   # Data of last node long num 3,072 so %rax should have 0xCBA 3,258 in end
+      .quad 0       # Null is next node so end of list
+
+# This sets up the first pointer ele1 into the %rdi register
+main:
+   pushq %rbp          # Push the caller address onto the stack to save for later
+   rrmovq %rsp, %rbp   # Overwrite the caller address with the address of this function
+   irmovq ele1, %rdi   # Put ele1 in as argument of sum_list
+   call sum_list
+   rrmovq %rbp, %rsp   # Set caller address as the current stack pointer
+   popq %rbp           # Return to the old caller from above
+   ret
+
+# long sum_list(list_ptr ls)
+# ls in %rdi
+sum_list:
+   pushq %rbp               # Save the caller address on the stack
+   rrmovq %rsp, %rbp        # Set new frame
+   irmovq $0x0, %r8         # Hold zero in register r8 for use later
+   rmmovq %r8, 0x8(%rbp)    # Put zero 8 spots from rbp stack frame for holding result
+   xorq %rax, %rax          # Ensure that return value is set to zero before adding to it
+   andq %rdi, %rdi          # Set the flag so as to stop if pointer points to null meaning ZF is set
+   jmp test
+loop:
+   mrmovq (%rdi), %r11     # Get the value at rdi and store into r11 (value)
+   mrmovq 0x8(%rbp), %r10  # Get memory at 0x8 in stack frame store into r10
+   addq   %r10, %r11       # val += val->next
+   rmmovq %r11, 0x8(%rbp)  # Store new added value into the stack frame
+   mrmovq 0x8(%rdi), %rdi  # Move to next node since alignment is 8
+   andq %rdi, %rdi         # Set the flag so as to stop if pointer points to null meaning ZF is set
+test:
+   jne loop                # Stop when the next node is pointing to 0
+   mrmovq 0x8(%rbp), %rax  # Store the added values into the return address
+   popq %rbp
+   ret
+
+# Stack starts growing here to lower addresses
+   .pos 0x200
+stack:
+

@@ -1,0 +1,41 @@
+# 4.47.ys bubble sorts data through pointer of the indeces of an array
+
+# Execution of program starts at address 0
+   .pos 0
+   irmovq stack, %rsp      # Set up stack pointer
+   call main               # Execute function main
+   halt                    # Quit program with program status 2-halt
+
+# Sample linked list
+   .align 8
+   data:
+      .quad 0x00a   # Data of first node long num 10
+      .quad 0x004   # Data of second node long num 4
+      .quad 0x010   # Data of third node long num 16
+      .quad 0x001   # Data of fourth node long num 1
+      .quad 0x100   # Data of fifth node long num 256
+      .quad 0x013   # Data of sixth node long num 19
+      .quad 0x017   # Data of seventh node long num 23
+      .quad 0x003   # Data of eighth node long num 3
+      .quad 0x002   # Data of ninth node long num 2
+      .quad 0x007   # Data of tenth node long num 7
+      # Should sort into 1 2 3 4 7 10 16 19 23 256
+
+# This sets up the first pointer of data into the %rdi register
+main:
+   pushq %rbp          # Push the caller address onto the stack to save for later
+   rrmovq %rsp, %rbp   # Overwrite the caller address with the address of this function
+   irmovq data, %rdi   # Put data in as argument of bubbleptr
+   call bubbleptr
+   rrmovq %rbp, %rsp   # Set caller address as the current stack pointer
+   popq %rbp           # Return to the old caller from above
+   ret
+
+bubbleptr:
+   
+
+
+# Stack starts growing here to lower addresses
+   .pos 0x400
+stack:
+

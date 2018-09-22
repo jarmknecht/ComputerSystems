@@ -1,0 +1,75 @@
+# copy.ys copies a block of words from one part of memory to another
+
+# Execution of program starts at address 0
+   .pos 0
+   irmovq stack, %rsp      # Set up stack pointer
+   call main               # Execute function main
+   halt                    # Quit program with program status 2-halt
+
+.align 8
+# Source block
+src:
+        .quad 0x00a
+        .quad 0x0b0
+        .quad 0xc00
+# Destination block
+dest:
+        .quad 0x111
+        .quad 0x222
+        .quad 0x333
+
+# This sets up what values will be sent to copy_block
+main:
+   pushq %rbp          # Push the caller address onto the stack to save for later
+   rrmovq %rsp, %rbp   # Overwrite the caller address with the address of this function
+   irmovq src, %rdi    # Move the source block in as 1st argument
+   irmovq dest, %rsi   # Move the destination block in as 2nd arg
+   irmovq $0x3, %rdx   # Move 3 into the 3rd arg which is length of block
+   call copy_block
+   rrmovq %rbp, %rsp   # Set caller address as the current stack pointer
+   popq %rbp           # Return to the old caller from above
+   ret
+
+# long copy_block(long *src, long *dest, long len)
+# src, dest, len are in %rdi, %rsi, and %rdx respectively
+copy_block:
+   pushq %rbp               # Push the caller address onto the stack to save for later
+   rrmovq %rsp, %rbp        # Overwrite the caller address with the address of this function
+   rmmovq %rdi, 0x90(%rbp)  # Save src on the stack at 24 up stack
+   rmmovq %rsi, 0x98(%rbp)  # Save dest on the stack at 32 up stack
+   rmmovq %rdx, 0xA0(%rbp)  # Save length on the stack at 40 up stack
+   irmovq $0x0, %r13        # This will store zero for result %r13
+   rmmovq %r13, 0x88(%rbp)  # Store result on stack at 16 up
+   jmp compare              # See if we need to enter the loop
+loop:
+   mrmovq 0x90(%rbp), %rax  # Move the src block into return register
+   mrmovq (%rax), %rbx      # Save the old src address in rbx
+   rmmovq %rbx, 0x80(%rbp)  # Put old src address on the stack
+   irmovq $0x8, %r14        # To add eight to the src
+   addq   %r14, %rax        # src++ since align by 8 
+   rmmovq %rax, 0x90(%rbp)  # Storing new src address on stack
+   mrmovq 0x98(%rbp), %rax  # Now grab destination block
+   rrmovq %rax, %rbx        # Store the old dest address in rbx
+   addq   %r14, %rax        # dest++ since align by 8
+   rmmovq %rax, 0x98(%rbp)  # Storing new dest address on stack
+   mrmovq 0x80(%rbp), %rdx  # Grab old src address
+   rmmovq %rdx, (%rbx)      # Store old src data into the dest address
+   mrmovq 0x80(%rbp), %rax  # Grab the result to XOR later
+   mrmovq 0x88(%rbp), %r9   # Hold result in r9 for XOR
+   xorq %rax, %r9           # XOR result with value
+   rmmovq %r9, 0x88(%rbp)   # Move XOR into result
+   irmovq $0x1, %r8         # 1 into r8
+   mrmovq 0xA0(%rbp), %r10  # Move length into r10 for subtraction
+   subq %r8, %r10           # length--
+   rmmovq %r10, 0xA0(%rbp)  # length-- back into memory
+compare:
+   mrmovq 0xA0(%rbp), %r11  # Store length in r11 to compare with r13 (0)
+   subq %r13, %r11          # Set flag with length - 0 and keep going till its 0 - 0
+   jg loop                  # If > 0 go to loop else return result
+   mrmovq 0x88(%rbp), %rax  # Put result in return register
+   popq %rbp
+   ret
+
+# Stack starts growing here to the lower addresses
+   .pos 0x300
+stack:
